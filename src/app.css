@@ -1,0 +1,115 @@
+.titulos{
+  text-transform: uppercase;
+}
+.titulosProducto{
+  margin-top: 20px;
+}
+
+.dialogos{
+    width: 100%;
+}
+
+.btnDialogAction{
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+.botonesFormularios{
+    margin-right: 10px;
+}
+
+.login{
+  margin-top: 160px;
+  padding-top: 17px;
+  padding-bottom: 25px;
+  border: 1px solid #dfdfdf;
+  border-radius: 4px;
+}
+
+.imputsLogin{
+  padding-top: 5px;
+}
+
+.btnRegistrar{
+  margin-top: 5px;
+}
+
+.btnInSesion{
+  margin-top: 10px;
+}
+
+.registros{
+  margin-top: 50px;
+  padding-top: 17px;
+  padding-bottom: 25px;
+  border: 1px solid #dfdfdf;
+  border-radius: 4px;
+}
+
+/* formulario venta */
+
+.tablaForVenta{
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* loading */
+
+.loading{
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+/* dialogo eliminar */
+
+.iconEliminar{
+  padding-left: 190px;
+}
+
+/* logo */
+
+.logo{
+  width: 50px;
+}
+
+
+/* icono busqueda */
+
+.iconoBusqueda{
+  padding-left: 10px;
+}
+
+/* paginador */
+
+.paginationBttns {
+  width: 80%;
+  height: 10px;
+  list-style: none;
+  display: flex;
+  justify-content: center;
+}
+
+.paginationBttns a {
+  padding: 7px;
+  margin: 5px;
+  border-radius: 5px;
+  border: 1px solid #2962ff;
+  color: #2962ff;
+  cursor: pointer;
+}
+
+.paginationBttns a:hover {
+  color: white;
+  background-color: #0039cb;
+}
+
+.paginationActive a {
+  color: white;
+  background-color: #2962ff;
+}
+
+.formuVenta{
+  width: 100%;
+}
