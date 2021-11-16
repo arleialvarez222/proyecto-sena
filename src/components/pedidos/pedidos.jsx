@@ -10,7 +10,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ReactPaginate from 'react-paginate';
 import Loading from '../loading/loading';
-import {obtenerEmpleado} from '../../actions/prueba-service';
+import {obtenerEmpleado} from '../../actions/empleado-action';
 
 const Pedidos = () => {
 

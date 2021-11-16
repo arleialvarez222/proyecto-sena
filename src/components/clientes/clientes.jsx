@@ -10,7 +10,9 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ConfirmarEliminarCliente from './eliminar-cliente';
 import Loading from '../loading/loading';
-import {obtenerEmpleado} from '../../actions/prueba-service';
+import { getClients } from '../../actions/client-action';
+import { useStateValue } from '../../context/store';
+import Alert from '@material-ui/lab/Alert';
 
 
 const Clientes = () => {
@@ -24,13 +26,14 @@ const Clientes = () => {
     const [loading, setLoading] = useState(false);
     const [selectCliente, setSelectCliente] = useState();
     const [busqueda, setBusqueda] = useState('');
+    const [ {openSnackbar}, dispatch] = useStateValue();
 
     const validationSchema = Yup.object({
-        nombre: Yup.string()
+        nombres: Yup.string()
         .min(3, 'Minimo 3 carácteres')
         .max(25, 'Maximo 25 carácteres')
         .required('Este campo es obligatorio'),
-        apellido: Yup.string()
+        apellidos: Yup.string()
         .min(3, 'Minimo 3 carácteres')
         .max(25, 'Maximo 25 carácteres')
         .required('Este campo es obligatorio'),
@@ -38,26 +41,23 @@ const Clientes = () => {
         .min(3, 'Minimo 3 carácteres')
         .max(25, 'Maximo 25 carácteres')
         .required('Este campo es obligatorio'),
-        salario: Yup.string() 
-        .required('Este campo es obligatorio'),
         documento: Yup.string() 
         .required('Este campo es obligatorio'),
         telefono: Yup.string() 
         .required('Este campo es obligatorio'),
-        email: Yup.string() 
+        correo: Yup.string() 
         .email()
         .required('Este campo es obligatorio'),
     });
 
     const form = useFormik({
         initialValues: {
-            nombre: '',
-            apellido     : '',
+            nombres: '',
+            apellidos : '',
             documento : '',
             direccion : '',
             telefono : '',
-            email : '',
-            salario : '',
+            correo : '',
         },
         onSubmit: (values) => {
             insertarCliente(values);
@@ -68,11 +68,18 @@ const Clientes = () => {
 
     const dataPruebaCliente = () =>{
         setLoading(true);
-        obtenerEmpleado().then(response => {
+        getClients().then(response => {
             setRespData(response?.data);
             setLoading(false);
         }).catch(error => {
-            console.log(error);
+            setLoading(false);
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                  open: true,
+                  mensaje: <Alert severity="error">Error consultando los datos!</Alert>,
+                },
+            });
         });
     }
 
@@ -178,6 +185,7 @@ const Clientes = () => {
                                     <TableCell align="left" > Id </TableCell>
                                     <TableCell align="left" > Nombre </TableCell>
                                     <TableCell align="left" > Apellido </TableCell>
+                                    <TableCell align="left" > Documento </TableCell>
                                     <TableCell align="left" > Telefono </TableCell>
                                     <TableCell align="left" > Direccion </TableCell>
                                     <TableCell align="left" > E-mail </TableCell>
@@ -189,12 +197,13 @@ const Clientes = () => {
                                     displayData?.length > 0 ? (
                                         displayData?.map(resp => (
                                             <TableRow key={resp?.idEmployee}>
-                                                <TableCell align="left" > {resp?.idEmployee} </TableCell>
-                                                <TableCell align="left" > {resp?.names} </TableCell>
-                                                <TableCell align="left" > {resp?.lastNames} </TableCell>
-                                                <TableCell align="left" > {resp?.telephone} </TableCell>
-                                                <TableCell align="left" > {resp?.address} </TableCell>
-                                                <TableCell align="left" > {resp?.email} </TableCell>
+                                                <TableCell align="left" > {resp?.idCliente} </TableCell>
+                                                <TableCell align="left" > {resp?.nombres} </TableCell>
+                                                <TableCell align="left" > {resp?.apellidos} </TableCell>
+                                                <TableCell align="left" > {resp?.documento} </TableCell>
+                                                <TableCell align="left" > {resp?.telefono} </TableCell>
+                                                <TableCell align="left" > {resp?.direccion} </TableCell>
+                                                <TableCell align="left" > {resp?.correo} </TableCell>
                                                 <TableCell align="left" > 
                                                     <IconButton onClick={ () => editarId(resp) } >
                                                         <EditIcon style={Style.iconoEdit}/>

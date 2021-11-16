@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-axios.defaults.baseURL= 'https://localhost:44390/api';
-axios.defaults.baseURL= 'https://localhost:44390/api';
+//axios.defaults.baseURL= 'https://localhost:44386/api';
+axios.defaults.baseURL= 'https://localhost:44386/api';
 
 const requestGenerico = {
     get : (url) => axios.get(url),

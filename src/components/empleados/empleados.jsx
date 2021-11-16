@@ -10,7 +10,9 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ReactPaginate from 'react-paginate';
 import Loading from '../loading/loading';
-import {obtenerEmpleado} from '../../actions/prueba-service';
+import {guardarEmpleado, obtenerEmpleado} from '../../actions/empleado-action';
+import { useStateValue } from '../../context/store';
+import Alert from '@material-ui/lab/Alert';
 
 const Empleados = () => {
 
@@ -23,60 +25,99 @@ const Empleados = () => {
     const [dataPerPage] = useState(10);
     const [loading, setloading] = useState(false);
     const [busqueda, setBusqueda] = useState('');
+    const [ {openSnackbar}, dispatch] = useStateValue();
 
     const validationSchema = Yup.object({
-        nombre: Yup.string()
-        .min(3, 'Minimo 3 carácteres')
-        .max(25, 'Maximo 25 carácteres')
-        .required('Este campo es obligatorio'),
-        apellido: Yup.string()
-        .min(3, 'Minimo 3 carácteres')
-        .max(25, 'Maximo 25 carácteres')
-        .required('Este campo es obligatorio'),
+        nombres: Yup.string()
+            .min(3, 'Minimo 3 carácteres')
+            .max(25, 'Maximo 25 carácteres')
+            .required('Este campo es obligatorio'),
+        apellidos: Yup.string()
+            .min(3, 'Minimo 3 carácteres')
+            .max(25, 'Maximo 25 carácteres')
+            .required('Este campo es obligatorio'),
         direccion: Yup.string()
-        .min(3, 'Minimo 3 carácteres')
-        .max(25, 'Maximo 25 carácteres')
-        .required('Este campo es obligatorio'),
-        salario: Yup.string() 
-        .required('Este campo es obligatorio'),
+            .min(3, 'Minimo 3 carácteres')
+            .max(25, 'Maximo 25 carácteres')
+            .required('Este campo es obligatorio'),
         documento: Yup.string() 
-        .required('Este campo es obligatorio'),
+            .required('Este campo es obligatorio'),
         telefono: Yup.string() 
-        .required('Este campo es obligatorio'),
-        email: Yup.string() 
-        .email()
-        .required('Este campo es obligatorio'),
+            .required('Este campo es obligatorio'),
+        correo: Yup.string() 
+            .email("el correo no es valido")
+            .required('Este campo es obligatorio'),
+        comisionEmpleado: Yup.string()
+           .nullable(), 
+        salarioEmpleado: Yup.string()
+           .required("Este campo es obligatorio"),
+        segSocEmpleado: Yup.string()
+            .required("Este campo es obligatorio")
     });
 
     const formulario = useFormik({
         initialValues: {
-            nombre: '',
-            apellido     : '',
-            documento : '',
+            salarioEmpleado : '',
+            segSocEmpleado : '',
+            comisionEmpleado : '',
+            nombres : '',
+            apellidos : '',
             direccion : '',
             telefono : '',
-            email : '',
-            salario : '',
+            correo : '', 
+            documento : '',
         },
         onSubmit: (values) => {
-            registrarEmpleado(values);
+            modoEdicion ? editarCliente(values) : registrarEmpleado(values);
+            
             limpiarCampos();
         },
         validationSchema: validationSchema,
     });
-
-    const informacionPueba = () =>{
+    
+    const getEmployes = () =>{
         setloading(true);
         obtenerEmpleado().then(response => {
             setRespData(response?.data);
             setloading(false);
+            //console.log(response)
         }).catch(error => {
-            console.log(error);
+            setloading(false);
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                  open: true,
+                  mensaje: <Alert severity="error">Error consultando los datos!</Alert>,
+                },
+            });
         });
-    } 
+    }
+    useEffect(() => {
+        getEmployes();
+     }, [])
 
     const registrarEmpleado = () => {
-        setRespData(formulario.values);
+        console.log(formulario?.values)
+        guardarEmpleado(formulario?.values).then(response => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="success">Los datos se almacenaron correctamente</Alert>,
+                },
+            });
+            limpiarCampos();
+            getEmployes();
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                  open: true,
+                  mensaje: <Alert severity="error">Se encontraron fallos al tratar de guardar los datos!</Alert>,
+                },
+            });
+        })
+        //setRespData(formulario.values);
      }
      
      const limpiarCampos = () => {
@@ -87,6 +128,10 @@ const Empleados = () => {
          setModoEdicion(true)
          formulario?.setValues({...resp});
          abrirModInsertar();
+     }
+
+     const editarCliente = () => {
+
      }
  
      const abrirModInsertar = () => {
@@ -124,9 +169,7 @@ const Empleados = () => {
          
      }
  
-     useEffect(() => {
-         informacionPueba();
-     }, [])
+     
 
     return (
         <Container maxWidth="xl" style={Style.container}>
@@ -178,9 +221,13 @@ const Empleados = () => {
                                     <TableCell align="left" > Id </TableCell>
                                     <TableCell align="left" > Nombre </TableCell>
                                     <TableCell align="left" > Apellido </TableCell>
+                                    <TableCell align="left" > Documento </TableCell>
                                     <TableCell align="left" > Telefono </TableCell>
                                     <TableCell align="left" > Direccion </TableCell>
                                     <TableCell align="left" > E-mail </TableCell>
+                                    <TableCell align="left" > Salario </TableCell>
+                                    <TableCell align="left" > Seguro </TableCell>
+                                    <TableCell align="left" > Comision </TableCell>
                                     <TableCell align="left" ></TableCell>
                                 </TableRow>
                             </TableHead>
@@ -189,12 +236,16 @@ const Empleados = () => {
                                     displayData?.length > 0 ? (
                                         displayData?.map(resp => (
                                             <TableRow key={resp?.idEmployee}>
-                                                <TableCell align="left" > {resp?.idEmployee} </TableCell>
-                                                <TableCell align="left" > {resp?.names} </TableCell>
-                                                <TableCell align="left" > {resp?.lastNames} </TableCell>
-                                                <TableCell align="left" > {resp?.telephone} </TableCell>
-                                                <TableCell align="left" > {resp?.address} </TableCell>
-                                                <TableCell align="left" > {resp?.email} </TableCell>
+                                                <TableCell align="left" > {resp?.idEmpleado} </TableCell>
+                                                <TableCell align="left" > {resp?.nombres} </TableCell>
+                                                <TableCell align="left" > {resp?.apellidos} </TableCell>
+                                                <TableCell align="left" > {resp?.documento} </TableCell>
+                                                <TableCell align="left" > {resp?.telefono} </TableCell>
+                                                <TableCell align="left" > {resp?.direccion} </TableCell>
+                                                <TableCell align="left" > {resp?.correo} </TableCell>
+                                                <TableCell align="left" > {resp?.salarioEmpleado} </TableCell>
+                                                <TableCell align="left" > {resp?.segSocEmpleado} </TableCell>
+                                                <TableCell align="left" > {resp?.comisionEmpleado} </TableCell>
                                                 <TableCell align="left" > 
                                                     <IconButton onClick={ () => editarValor(resp) } >
                                                         <EditIcon style={Style.iconoEdit}/>
@@ -207,6 +258,10 @@ const Empleados = () => {
                                         ))
                                     ) : (
                                         <TableRow>
+                                            <TableCell align="left" > Cargando... </TableCell>
+                                            <TableCell align="left" > Cargando... </TableCell>
+                                            <TableCell align="left" > Cargando... </TableCell>
+                                            <TableCell align="left" > Cargando... </TableCell>
                                             <TableCell align="left" > Cargando... </TableCell>
                                             <TableCell align="left" > Cargando... </TableCell>
                                             <TableCell align="left" > Cargando... </TableCell>

@@ -3,10 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './app';
 import reportWebVitals from './reportWebVitals';
+import { StateProvider } from './context/store';
+import { initialState } from './context/initial-state';
+import { mainReducer } from './context/reducers/index';
 
 ReactDOM.render(
   <>
-    <App />
+    <StateProvider initialState={initialState} reducer={mainReducer} >
+      <App />
+   </StateProvider>
   </>,
   document.getElementById('root')
 );

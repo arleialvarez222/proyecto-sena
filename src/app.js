@@ -3,7 +3,7 @@ import './app.css';
 import theme from './theme/theme';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
-import { Grid } from '@material-ui/core';
+import { Grid, Snackbar } from '@material-ui/core';
 import AppNavbar from './components/navegacion/app-navbar';
 import Productos from './components/productos/productos';
 import Footer from './components/footer/footer';
@@ -16,10 +16,30 @@ import Inventario from './components/inventario/inventario';
 import Pedidos from './components/pedidos/pedidos';
 import Ventas from './components/ventas/ventas';
 import DialogVenta from './components/ventas/agregar-venta';
+import { useStateValue } from './context/store';
 
 function App() {
+  const [{ openSnackbar }, dispatch] = useStateValue();
   return (
     <React.Fragment>
+      <Snackbar 
+          anchorOrigin={{ vertical:'top', horizontal:'center', }}
+          open={ openSnackbar ? openSnackbar.open : false }
+          autoHideDuration={ 3000 }
+          ContentProps={{ "aria-describedby" : "message-id" }}
+          //message={  openSnackbar ? openSnackbar.mensaje : '' }
+          onClose={ () => 
+            dispatch({
+              type: "OPEN_SNACKBAR",
+                openMensaje : {
+                  open: false,
+                  mensaje: ""
+                }
+            }) 
+          }
+        >
+        { openSnackbar ? openSnackbar.mensaje : '' }  
+        </Snackbar>
       <Router>
         <MuiThemeProvider theme={theme}>
           <AppNavbar/>

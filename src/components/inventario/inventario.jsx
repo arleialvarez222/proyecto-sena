@@ -8,7 +8,7 @@ import ReactPaginate from 'react-paginate';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Loading from '../loading/loading';
-import {obtenerEmpleado} from '../../actions/prueba-service';
+import {obtenerEmpleado} from '../../actions/empleado-action';
 import DialogInventario from './dialog-inventario';
 import ConfirmarEliminarInventario from './eliminar-inventario';
 

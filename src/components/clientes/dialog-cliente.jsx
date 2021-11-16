@@ -35,38 +35,39 @@ function DialogCliente({isOpen, onClose, form, modoEdicion })  {
                     <Grid container spacing={2} >
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    name="nombre" 
-                                    value={form?.values?.nombre} 
+                                    name="nombres" 
+                                    value={form?.values?.nombres} 
                                     onChange={form?.handleChange} 
                                     margin="dense" 
                                     variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar nombre"
-                                    error={form.touched.nombre && Boolean(form.errors.nombre)} 
-                                    helperText={form.touched.nombre && form.errors.nombre} 
+                                    label="Ingresar nombres *"
+                                    error={form.touched.nombres && Boolean(form.errors.nombres)} 
+                                    helperText={form.touched.nombres && form.errors.nombres} 
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    name="apellido" 
-                                    value={form?.values?.apellido} 
+                                    name="apellidos" 
+                                    value={form?.values?.apellidos} 
                                     onChange={form?.handleChange} 
                                     margin="dense" 
                                     variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar apellido" 
-                                    error={form.touched.apellido && Boolean(form.errors.apellido)} 
-                                    helperText={form.touched.apellido && form.errors.apellido} 
+                                    label="Ingresar apellidos *" 
+                                    error={form.touched.apellidos && Boolean(form.errors.apellidos)} 
+                                    helperText={form.touched.apellidos && form.errors.apellidos} 
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField 
+                                type="number"
                                     name="documento" 
                                     value={form?.values?.documento} 
                                     onChange={form?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar documento" 
+                                    label="Ingresar documento *" 
                                     error={form.touched.documento && Boolean(form.errors.documento)} 
                                     helperText={form.touched.documento && form.errors.documento} 
                                 />
@@ -79,7 +80,7 @@ function DialogCliente({isOpen, onClose, form, modoEdicion })  {
                                     margin="dense" 
                                     variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar direccion" 
+                                    label="Ingresar direccion *" 
                                     error={form.touched.direccion && Boolean(form.errors.direccion)} 
                                     helperText={form.touched.direccion && form.errors.direccion} 
                                 />
@@ -87,14 +88,14 @@ function DialogCliente({isOpen, onClose, form, modoEdicion })  {
                             <Grid item xs={12} md={6}>
                                 <TextField 
                                     type="email" 
-                                    name="email" 
-                                    value={form?.values?.email} 
+                                    name="correo" 
+                                    value={form?.values?.correo} 
                                     onChange={form?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar e-mail" 
-                                    error={form.touched.email && Boolean(form.errors.email)} 
-                                    helperText={form.touched.email && form.errors.email}
+                                    label="Ingresar e-mail *" 
+                                    error={form.touched.correo && Boolean(form.errors.correo)} 
+                                    helperText={form.touched.correo && form.errors.correo}
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
@@ -105,22 +106,9 @@ function DialogCliente({isOpen, onClose, form, modoEdicion })  {
                                     onChange={form?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar teléfono" 
+                                    label="Ingresar teléfono *" 
                                     error={form.touched.telefono && Boolean(form.errors.telefono)} 
                                     helperText={form.touched.telefono && form.errors.telefono}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <TextField 
-                                    type="number" 
-                                    name="salario" 
-                                    value={form?.values?.salario} 
-                                    onChange={form?.handleChange} 
-                                    margin="dense" variant="outlined" 
-                                    fullWidth 
-                                    label="Ingresar salario" 
-                                    error={form.touched.salario && Boolean(form.errors.salario)} 
-                                    helperText={form.touched.salario && form.errors.salario}
                                 />
                             </Grid>
                         

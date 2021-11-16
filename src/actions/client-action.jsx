@@ -1,12 +1,11 @@
 import HttpService from '../servicios/http-service';
 
-
-export const obtenerEmpleado = () => {
+export const getClients = () => {
     return new Promise((resolve, reject) => {
-        HttpService.get('/Employees').then(response => {
+        HttpService.get('/Clients').then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);
         });
-    })
+    });
 }

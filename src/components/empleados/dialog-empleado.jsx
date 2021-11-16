@@ -34,38 +34,39 @@ function DialogEmpleado({ isOpen, onClose, formulario, modoEdicion }) {
                         <Grid container spacing={2} >
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    name="nombre" 
-                                    value={formulario?.values?.nombre} 
+                                    name="nombres" 
+                                    value={formulario?.values?.nombres} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" 
                                     variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar nombre"
-                                    error={formulario.touched.nombre && Boolean(formulario.errors.nombre)} 
-                                    helperText={formulario.touched.nombre && formulario.errors.nombre} 
+                                    label="Ingresar nombres *"
+                                    error={formulario.touched.nombres && Boolean(formulario.errors.nombres)} 
+                                    helperText={formulario.touched.nombres && formulario.errors.nombres} 
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    name="apellido" 
-                                    value={formulario?.values?.apellido} 
+                                    name="apellidos" 
+                                    value={formulario?.values?.apellidos} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" 
                                     variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar apellido" 
-                                    error={formulario.touched.apellido && Boolean(formulario.errors.apellido)} 
-                                    helperText={formulario.touched.apellido && formulario.errors.apellido} 
+                                    label="Ingresar apellidos *" 
+                                    error={formulario.touched.apellidos && Boolean(formulario.errors.apellidos)} 
+                                    helperText={formulario.touched.apellidos && formulario.errors.apellidos} 
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField 
+                                    type="number"
                                     name="documento" 
                                     value={formulario?.values?.documento} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar documento" 
+                                    label="Ingresar documento *" 
                                     error={formulario.touched.documento && Boolean(formulario.errors.documento)} 
                                     helperText={formulario.touched.documento && formulario.errors.documento} 
                                 />
@@ -78,7 +79,7 @@ function DialogEmpleado({ isOpen, onClose, formulario, modoEdicion }) {
                                     margin="dense" 
                                     variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar direccion" 
+                                    label="Ingresar direccion *" 
                                     error={formulario.touched.direccion && Boolean(formulario.errors.direccion)} 
                                     helperText={formulario.touched.direccion && formulario.errors.direccion} 
                                 />
@@ -86,25 +87,25 @@ function DialogEmpleado({ isOpen, onClose, formulario, modoEdicion }) {
                             <Grid item xs={12} md={6}>
                                 <TextField 
                                     type="email" 
-                                    name="email" 
-                                    value={formulario?.values?.email} 
+                                    name="correo" 
+                                    value={formulario?.values?.correo} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar e-mail" 
-                                    error={formulario.touched.email && Boolean(formulario.errors.email)} 
-                                    helperText={formulario.touched.email && formulario.errors.email}
+                                    label="Ingresar e-mail *" 
+                                    error={formulario.touched.correo && Boolean(formulario.errors.correo)} 
+                                    helperText={formulario.touched.correo && formulario.errors.correo}
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    type="number" 
+                                    //type="number" 
                                     name="telefono" 
                                     value={formulario?.values?.telefono} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar teléfono" 
+                                    label="Ingresar teléfono *" 
                                     error={formulario.touched.telefono && Boolean(formulario.errors.telefono)} 
                                     helperText={formulario.touched.telefono && formulario.errors.telefono}
                                 />
@@ -112,14 +113,39 @@ function DialogEmpleado({ isOpen, onClose, formulario, modoEdicion }) {
                             <Grid item xs={12} md={6}>
                                 <TextField 
                                     type="number" 
-                                    name="salario" 
-                                    value={formulario?.values?.salario} 
+                                    name="salarioEmpleado" 
+                                    value={formulario?.values?.salarioEmpleado} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar salario" 
-                                    error={formulario.touched.salario && Boolean(formulario.errors.salario)} 
-                                    helperText={formulario.touched.salario && formulario.errors.salario}
+                                    label="Ingresar salario *" 
+                                    error={formulario.touched.salarioEmpleado && Boolean(formulario.errors.salarioEmpleado)} 
+                                    helperText={formulario.touched.salarioEmpleado && formulario.errors.salarioEmpleado}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField 
+                                    name="segSocEmpleado" 
+                                    value={formulario?.values?.segSocEmpleado} 
+                                    onChange={formulario?.handleChange} 
+                                    margin="dense" variant="outlined" 
+                                    fullWidth 
+                                    label="Seguridad social *" 
+                                    error={formulario.touched.segSocEmpleado && Boolean(formulario.errors.segSocEmpleado)} 
+                                    helperText={formulario.touched.segSocEmpleado && formulario.errors.segSocEmpleado}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField 
+                                    type="number"
+                                    name="comisionEmpleado" 
+                                    value={formulario?.values?.comisionEmpleado} 
+                                    onChange={formulario?.handleChange} 
+                                    margin="dense" variant="outlined" 
+                                    fullWidth 
+                                    label="Comision" 
+                                    error={formulario.touched.comisionEmpleado && Boolean(formulario.errors.comisionEmpleado)} 
+                                    helperText={formulario.touched.comisionEmpleado && formulario.errors.comisionEmpleado}
                                 />
                             </Grid>
                         
