@@ -8,9 +8,9 @@ import ReactPaginate from 'react-paginate';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Loading from '../loading/loading';
-import {obtenerEmpleado} from '../../actions/empleado-action';
 import DialogInventario from './dialog-inventario';
 import ConfirmarEliminarInventario from './eliminar-inventario';
+import { obtenerInventarios } from '../../actions/inventory-action';
 
 const Inventario = () => {
 
@@ -21,7 +21,7 @@ const Inventario = () => {
     const [modoEdicion, setModoEdicion] = useState(false);
     const [modalEliminar, setModalEliminar] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [selectCliente, setSelectCliente] = useState();
+    const [selectInventory, setSelectInventory] = useState();
     const [busqueda, setBusqueda] = useState('');
 
     const validationSchema = Yup.object({
@@ -51,11 +51,13 @@ const Inventario = () => {
         validationSchema: validationSchema,
     });
 
-    const dataPruebaCliente = () =>{
+    const getInventorys = () =>{
         setLoading(true);
-        obtenerEmpleado().then(response => {
-            setRespData(response?.data);
-            setLoading(false);
+        obtenerInventarios().then(response => {
+            setTimeout(() => {
+                setRespData(response?.data);
+                setLoading(false);
+            }, 1000);
         }).catch(error => {
             console.log(error);
         });
@@ -87,7 +89,7 @@ const Inventario = () => {
 
     const abrirModEliminar = (clienteItem) => {
         setModalEliminar(true);
-        setSelectCliente(clienteItem);
+        setSelectInventory(clienteItem);
     }
 
     const cerrarModEliminar = () => {
@@ -111,7 +113,7 @@ const Inventario = () => {
     }
 
     useEffect(() => {
-        dataPruebaCliente();;
+        getInventorys();;
     }, [])
 
     return (
@@ -162,8 +164,8 @@ const Inventario = () => {
                                 <TableRow>
                                     <TableCell align="left" > Id </TableCell>
                                     <TableCell align="left" > Nombre producto </TableCell>
-                                    <TableCell align="left" > Fecha ingreso </TableCell>
-                                    <TableCell align="left" > Cantidad </TableCell>
+                                    <TableCell align="left" > Cantidad Mínima </TableCell>
+                                    <TableCell align="left" > Cantidad Máxima </TableCell>
                                     <TableCell align="left" > Precio/unit </TableCell>
                                     <TableCell align="left" ></TableCell>
                                 </TableRow>
@@ -172,11 +174,11 @@ const Inventario = () => {
                                 {
                                     displayData?.length > 0 ? (
                                         displayData?.map(resp => (
-                                            <TableRow key={resp?.idEmployee}>
-                                                <TableCell align="left" > {resp?.idEmployee} </TableCell>
-                                                <TableCell align="left" > {resp?.names} </TableCell>
-                                                <TableCell align="left" > {resp?.lastNames} </TableCell>
-                                                <TableCell align="left" > {resp?.telephone} </TableCell>
+                                            <TableRow key={resp?.idInventario}>
+                                                <TableCell align="left" > {resp?.idInventario} </TableCell>
+                                                <TableCell align="left" > {resp?.idProducto} </TableCell>
+                                                <TableCell align="left" > {resp?.cantMinimaProducto} </TableCell>
+                                                <TableCell align="left" > {resp?.cantDisponibleProducto} </TableCell>
                                                 <TableCell align="left" > {resp?.address} </TableCell>
                                                 <TableCell align="left" > 
                                                     <IconButton onClick={ () => editarId(resp) } >

@@ -19,18 +19,18 @@ export const guardarEmpleado = (formulario) => {
         });
     })
 }
-export const editarEmpleado = () => {
+export const editarEmpleado = (formulario) => {
     return new Promise((resolve, reject) => {
-        HttpService.put('/Employe').then(response => {
+        HttpService.put(`/Employe/${formulario?.idEmpleado}`, formulario).then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);
         });
     })
 }
-export const eliminarEmpleado = () => {
+export const eliminarEmpleado = (formulario) => {
     return new Promise((resolve, reject) => {
-        HttpService.delete('/Employe').then(response => {
+        HttpService.delete(`/Employe/${formulario?.idEmpleado}`).then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);

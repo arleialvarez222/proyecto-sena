@@ -10,7 +10,9 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ConfirmarEliminarProveedor from './eliminar-proveedor';
 import Loading from '../loading/loading';
-import {obtenerEmpleado} from '../../actions/empleado-action';
+import { editarProveedor, eliminarProveedor, guardarProveedor, obtenerProveedores } from '../../actions/proveedor-action';
+import { useStateValue } from '../../context/store';
+import Alert from '@material-ui/lab/Alert';
 
 const Proveedor = () => {
 
@@ -21,14 +23,15 @@ const Proveedor = () => {
     const [modoEdicion, setModoEdicion] = useState(false);
     const [modalEliminar, setModalEliminar] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [selectCliente, setSelectCliente] = useState();
+    const [selectProveedor, setSelectProveedor] = useState();
     const [busqueda, setBusqueda] = useState('');
+    const [ {openSnackbar}, dispatch] = useStateValue();
 
     const validationSchema = Yup.object({
-        nombre: Yup.string()
+        nombreProveedor: Yup.string()
+        .required('Este campo es obligatorio')
         .min(3, 'Minimo 3 carácteres')
-        .max(25, 'Maximo 25 carácteres')
-        .required('Este campo es obligatorio'),
+        .max(25, 'Maximo 25 carácteres'),
         telefono: Yup.string() 
         .min(7, 'Minimo 7 numeros')
         .required('Este campo es obligatorio'),
@@ -37,42 +40,119 @@ const Proveedor = () => {
         .max(25, 'Maximo 25 carácteres')
         .required('Este campo es obligatorio'),
         email: Yup.string() 
-        .email()
+        .email("Este E-mail no es válido")
         .required('Este campo es obligatorio'),
     });
 
     const form = useFormik({
         initialValues: {
-            nombre: '',
+            nombreProveedor: '',
             telefono: '',
             direccion: '',
             email: '',
         },
         onSubmit: (values) => {
-            insertarCliente(values);
+            modoEdicion ? uddateSupplier(values) : saveSupplier(values);
             limpiarCampos();
         },
         validationSchema: validationSchema,
     });
 
-    const dataPruebaCliente = () =>{
+    const getProveedor = () =>{
         setLoading(true);
-        obtenerEmpleado().then(response => {
-            setRespData(response?.data);
-            setLoading(false);
+        obtenerProveedores().then(response => {
+            setTimeout(() => {
+                setRespData(response?.data);
+                setLoading(false);
+            }, 1000);
         }).catch(error => {
             console.log(error);
         });
     }
 
-    const insertarCliente = () => {
-        console.log(form.values);
+    const saveSupplier = () => {
+        guardarProveedor(form?.values).then(response => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="success">Los datos se almacenaron correctamente</Alert>,
+                },
+            });
+            getProveedor();
+            limpiarCampos();
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                  open: true,
+                  mensaje: <Alert severity="error">Se encontraron fallos al tratar de guardar los datos!</Alert>,
+                },
+            });
+        })
     }
 
     const editarId = (resp) => {
         setModoEdicion(true);
         form?.setValues({...resp});
         abrirModalInsertar();
+    }
+
+    const uddateSupplier = () => {
+        editarProveedor(form?.values).then(response => {
+            let respuesta = response?.data;
+            let dataAuxiliar = respData;
+            dataAuxiliar?.map(resp => {
+                if(resp?.idProveedor === form?.idProveedor){
+                    resp.nombreProveedor = respuesta?.nombreProveedor;
+                    resp.telefono = respuesta?.telefono;
+                    resp.direccion = respuesta?.direccion;
+                    resp.email = respuesta?.email;
+                }
+            })
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="success" >Actualización exitosa</Alert>,
+                },
+            });
+            getProveedor();
+            cerrarModalInsertar();
+            limpiarCampos();
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="error">No se actualizaron los datos!!!</Alert>,
+                },
+            });
+        })
+    }
+
+    const deleteSupplier = (idProveedor) => {
+        eliminarProveedor(idProveedor).then(response => {
+            const arrayFiltrado =respData?.filter(x => x?.idProveedor !== idProveedor);
+            setRespData(arrayFiltrado);
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="warning">Los datos del proveedor se eliminaron</Alert>,
+                },
+            });
+            getProveedor();
+            cerrarModEliminar()
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="error" >Error!!!, los datos no fueron eliminados</Alert>,
+                },
+            });
+        })
     }
 
     const limpiarCampos = () => {
@@ -91,7 +171,7 @@ const Proveedor = () => {
 
     const abrirModEliminar = (proveedorItem) => {
         setModalEliminar(true);
-        setSelectCliente(proveedorItem);
+        setSelectProveedor(proveedorItem);
     }
 
     const cerrarModEliminar = () => {
@@ -115,7 +195,7 @@ const Proveedor = () => {
     }
 
     useEffect(() => {
-        dataPruebaCliente();;
+        getProveedor();;
     }, [])
 
     return (
@@ -144,6 +224,8 @@ const Proveedor = () => {
                     <ConfirmarEliminarProveedor
                         abrir={modalEliminar}
                         cerrar={cerrarModEliminar}
+                        deleteSupplier={deleteSupplier}
+                        selectProveedor={selectProveedor}
                     />
                 </Grid>
 
@@ -176,11 +258,11 @@ const Proveedor = () => {
                                 {
                                     displayData?.length > 0 ? (
                                         displayData?.map(resp => (
-                                            <TableRow key={resp?.idEmployee}>
-                                                <TableCell align="left" > {resp?.idEmployee} </TableCell>
-                                                <TableCell align="left" > {resp?.names} </TableCell>
-                                                <TableCell align="left" > {resp?.telephone} </TableCell>
-                                                <TableCell align="left" > {resp?.address} </TableCell>
+                                            <TableRow key={resp?.idProveedor}>
+                                                <TableCell align="left" > {resp?.idProveedor} </TableCell>
+                                                <TableCell align="left" > {resp?.nombreProveedor} </TableCell>
+                                                <TableCell align="left" > {resp?.telefono} </TableCell>
+                                                <TableCell align="left" > {resp?.direccion} </TableCell>
                                                 <TableCell align="left" > {resp?.email} </TableCell>
                                                 <TableCell align="left" > 
                                                     <IconButton onClick={ () => editarId(resp) } >

@@ -143,7 +143,7 @@ function DialogEmpleado({ isOpen, onClose, formulario, modoEdicion }) {
                                     onChange={formulario?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    label="Comision" 
+                                    label="Comision *" 
                                     error={formulario.touched.comisionEmpleado && Boolean(formulario.errors.comisionEmpleado)} 
                                     helperText={formulario.touched.comisionEmpleado && formulario.errors.comisionEmpleado}
                                 />

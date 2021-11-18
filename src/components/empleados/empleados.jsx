@@ -10,7 +10,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ReactPaginate from 'react-paginate';
 import Loading from '../loading/loading';
-import {guardarEmpleado, obtenerEmpleado} from '../../actions/empleado-action';
+import {editarEmpleado, eliminarEmpleado, guardarEmpleado, obtenerEmpleado} from '../../actions/empleado-action';
 import { useStateValue } from '../../context/store';
 import Alert from '@material-ui/lab/Alert';
 
@@ -48,7 +48,8 @@ const Empleados = () => {
             .email("el correo no es valido")
             .required('Este campo es obligatorio'),
         comisionEmpleado: Yup.string()
-           .nullable(), 
+           .nullable()
+           .required("Este campo es obligatorio"), 
         salarioEmpleado: Yup.string()
            .required("Este campo es obligatorio"),
         segSocEmpleado: Yup.string()
@@ -68,7 +69,7 @@ const Empleados = () => {
             documento : '',
         },
         onSubmit: (values) => {
-            modoEdicion ? editarCliente(values) : registrarEmpleado(values);
+            modoEdicion ? updateEmploye(values) : saveEmploye(values);
             
             limpiarCampos();
         },
@@ -78,9 +79,10 @@ const Empleados = () => {
     const getEmployes = () =>{
         setloading(true);
         obtenerEmpleado().then(response => {
-            setRespData(response?.data);
-            setloading(false);
-            //console.log(response)
+            setTimeout(() => {
+                setRespData(response?.data);
+                setloading(false);
+            }, 1000);
         }).catch(error => {
             setloading(false);
             dispatch({
@@ -96,8 +98,7 @@ const Empleados = () => {
         getEmployes();
      }, [])
 
-    const registrarEmpleado = () => {
-        console.log(formulario?.values)
+    const saveEmploye = () => {
         guardarEmpleado(formulario?.values).then(response => {
             dispatch({
                 type: "OPEN_SNACKBAR",
@@ -130,9 +131,68 @@ const Empleados = () => {
          abrirModInsertar();
      }
 
-     const editarCliente = () => {
-
+     const updateEmploye = () => {
+        editarEmpleado(formulario?.values).then(response => {
+            let respuesta = response?.data;
+            let dataAuxiliar = respData;
+            dataAuxiliar.map(resp => {
+                if(resp?.idEmpleado === formulario?.idEmpleado){
+                   resp.nombres = respuesta?.nombres;
+                   resp.apellidos = respuesta?.apellidos;
+                   resp.documento = respuesta?.documento;
+                   resp.telefono = respuesta?.telefono;
+                   resp.direccion = respuesta?.direccion;
+                   resp.correo = respuesta?.correo;
+                   resp.comisionEmpleado = respuesta?.comisionEmpleado;
+                   resp.segSocEmpleado = respuesta?.segSocEmpleado;
+                   resp.salarioEmpleado = respuesta?.salarioEmpleado;
+                }
+                dispatch({
+                    type: "OPEN_SNACKBAR",
+                    openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="success" >Actualización exitosa</Alert>,
+                    },
+                });
+                getEmployes();
+                limpiarCampos();
+                cerrarModInsertar();
+                return respuesta;
+           })
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="error">No se actualizaron los datos!!!</Alert>,
+                },
+            });
+        })
      }
+
+     const eliminarIdEmpleado = (idEmployee) => {
+        eliminarEmpleado(idEmployee).then(response => {
+            const arrayEmpleado = respData?.filter(item => item?.idEmployee !== idEmployee);
+            setRespData(arrayEmpleado);
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="warning">Los datos del empleado se eliminaron</Alert>,
+                },
+            });
+            setModalEliminar(false);
+            getEmployes()
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="error" >Error!!!, los datos no fueron eliminados</Alert>,
+                },
+            });
+        });
+    }
  
      const abrirModInsertar = () => {
          setModalInsertar(true);
@@ -197,6 +257,7 @@ const Empleados = () => {
                     <ConfirmarEliminarEmpleado
                         abrir={modalEliminar}
                         cerrar={cerrarModalEliminar}
+                        eliminarEmpleadoId={eliminarIdEmpleado}
                         empleado={selectEmpleado}
                     />
                 </Grid>

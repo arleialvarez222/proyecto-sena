@@ -10,7 +10,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ConfirmarEliminarCliente from './eliminar-cliente';
 import Loading from '../loading/loading';
-import { getClients } from '../../actions/client-action';
+import { editarCliente, eliminarCliente, guardarCliente, obtenerClientes } from '../../actions/client-action';
 import { useStateValue } from '../../context/store';
 import Alert from '@material-ui/lab/Alert';
 
@@ -60,17 +60,19 @@ const Clientes = () => {
             correo : '',
         },
         onSubmit: (values) => {
-            insertarCliente(values);
+            modoEdicion ? updateCliente(values) : insertarCliente(values);
             limpiarCampos();
         },
         validationSchema: validationSchema,
     });
 
-    const dataPruebaCliente = () =>{
+    const getClients = () =>{
         setLoading(true);
-        getClients().then(response => {
-            setRespData(response?.data);
-            setLoading(false);
+        obtenerClientes().then(response => {
+            setTimeout(() => {
+                setRespData(response?.data);
+                setLoading(false);
+            }, 1000);
         }).catch(error => {
             setLoading(false);
             dispatch({
@@ -84,13 +86,90 @@ const Clientes = () => {
     }
 
     const insertarCliente = () => {
-        console.log(form.values);
+        guardarCliente(form?.values).then(response => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="success">Los datos se almacenaron correctamente</Alert>,
+                },
+            });
+            getClients();
+            limpiarCampos();
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                  open: true,
+                  mensaje: <Alert severity="error">Se encontraron fallos al tratar de guardar los datos!</Alert>,
+                },
+            });
+        })
     }
 
     const editarId = (resp) => {
         setModoEdicion(true);
         form?.setValues({...resp});
         abrirModalInsertar();
+    }
+
+    const updateCliente = ()=> {
+        editarCliente(form?.values).then(response => {
+            let respuesta = response?.data;
+            let dataAuxiliar = respData;
+            dataAuxiliar.map(resp => {
+                if(resp.idCliente === form?.idCliente){
+                    resp.nombres = respuesta?.nombres;
+                    resp.apellidos = respuesta?.apellidos;
+                    resp.telefono = respuesta?.telefono;
+                    resp.direccion = respuesta?.direccion;
+                    resp.correo = respuesta?.correo;
+                    resp.documento = respuesta?.documento;
+                }
+                dispatch({
+                    type: "OPEN_SNACKBAR",
+                    openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="success" >Los datos se actualizaron</Alert>,
+                    },
+                });
+                getClients();
+                limpiarCampos();
+                cerrarModalInsertar();
+            })
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="error">No se actualizaron los datos!!!</Alert>,
+                },
+            });
+        })
+    }
+
+    const deleteCliente = (idCliente) => {
+        eliminarCliente(idCliente).then(response => {
+            const arrayCliente = respData.filter(item => item?.idCliente !== idCliente);
+            setRespData(arrayCliente);
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="warning">Los datos se eliminaron</Alert>,
+                },
+            });
+            setModalEliminar(false);
+            getClients();
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="error" >Error!!!, los datos no fueron eliminados</Alert>,
+                },
+            });
+        });
     }
 
     const limpiarCampos = () => {
@@ -133,7 +212,7 @@ const Clientes = () => {
     }
 
     useEffect(() => {
-        dataPruebaCliente();;
+        getClients();;
     }, [])
 
     return (
@@ -162,6 +241,8 @@ const Clientes = () => {
                     <ConfirmarEliminarCliente
                         abrir={modalEliminar}
                         cerrarModal={cerrarModEliminar}
+                        deleteCliente={deleteCliente}
+                        selectCliente={selectCliente}
                     />
                 </Grid>
 
@@ -196,7 +277,7 @@ const Clientes = () => {
                                 {
                                     displayData?.length > 0 ? (
                                         displayData?.map(resp => (
-                                            <TableRow key={resp?.idEmployee}>
+                                            <TableRow key={resp?.idCliente}>
                                                 <TableCell align="left" > {resp?.idCliente} </TableCell>
                                                 <TableCell align="left" > {resp?.nombres} </TableCell>
                                                 <TableCell align="left" > {resp?.apellidos} </TableCell>

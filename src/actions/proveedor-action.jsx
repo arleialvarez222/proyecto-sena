@@ -1,18 +1,18 @@
 import HttpService from '../servicios/http-service';
 
 
-export const obtenerClientes = () => {
+export const obtenerProveedores = () => {
     return new Promise((resolve, reject) => {
-        HttpService.get('/Clients').then(response => {
+        HttpService.get('/Supplier').then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);
         });
     })
 }
-export const guardarCliente = (formulario) => {
+export const guardarProveedor = (formulario) => {
     return new Promise((resolve, reject) => {
-        HttpService.post('/Clients', formulario).then(response => {
+        HttpService.post('/Supplier', formulario).then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);
@@ -20,18 +20,18 @@ export const guardarCliente = (formulario) => {
     })
 }
 
-export const editarCliente = (formulario) => {
+export const editarProveedor = (formulario) => {
     return new Promise((resolve, reject) => {
-        HttpService.put(`/Clients/${formulario?.idCliente}`, formulario).then(response => {
+        HttpService.put(`/Supplier/${formulario?.idProveedor}`, formulario).then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);
         });
     })
 }
-export const eliminarCliente = (formulario) => {
+export const eliminarProveedor = (formulario) => {
     return new Promise((resolve, reject) => {
-        HttpService.delete(`/Clients/${formulario?.idCliente}`).then(response => {
+        HttpService.delete(`/Supplier/${formulario?.idProveedor}`).then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);

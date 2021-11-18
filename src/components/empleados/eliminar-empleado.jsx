@@ -2,7 +2,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogActions, Button, Grid, DialogContentText, DialogTitle, Icon } from '@material-ui/core';
 import Style from '../../style/style';
 
-const ConfirmarEliminarEmpleado = ({abrir, cerrar}) => {
+const ConfirmarEliminarEmpleado = ({abrir, cerrar, eliminarEmpleadoId, empleado}) => {
     return (
         <div>
             <Dialog open={abrir} aria-labelledby="form-dialog-title" className="dialogos" >
@@ -20,7 +20,7 @@ const ConfirmarEliminarEmpleado = ({abrir, cerrar}) => {
                 </DialogContent>
                     <DialogActions  className="btnDialogAction">
                         
-                        <Button type="submit"  variant="contained" color="primary"> Eliminar </Button>
+                        <Button onClick={ () => eliminarEmpleadoId(empleado)} type="submit"  variant="contained" color="primary"> Eliminar </Button>
                                 
                         <Button onClick={cerrar} variant="outlined" color="primary" autoFocus >
                             Cancelar

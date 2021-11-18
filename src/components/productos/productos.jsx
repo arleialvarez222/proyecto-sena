@@ -10,7 +10,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ReactPaginate from 'react-paginate';
 import Loading from '../loading/loading';
-import {obtenerEmpleado} from '../../actions/empleado-action';
+import { obtenerProductos } from '../../actions/product-action';
 
 
 const Productos = () => {
@@ -56,11 +56,13 @@ const Productos = () => {
         validationSchema: validationSchema,
     });
 
-    const informacionPueba = () =>{
+    const getProducts = () =>{
         setloading(true);
-        obtenerEmpleado().then(response => {
-            setRespData(response?.data);
-            setloading(false);
+        obtenerProductos().then(response => {
+            setTimeout(() => {
+                setRespData(response?.data);
+                setloading(false);
+            }, 1000);
         }).catch(error => {
             console.log(error);
         });
@@ -116,7 +118,7 @@ const Productos = () => {
     }
 
     useEffect(() => {
-        informacionPueba();
+        getProducts();
     }, [])
 
     return (
@@ -170,7 +172,7 @@ const Productos = () => {
                                     <TableCell align="left" > Nombre producto </TableCell>
                                     <TableCell align="left" > Valor producto </TableCell>
                                     <TableCell align="left" > Descripción </TableCell>
-                                    <TableCell align="left" > Proveedor </TableCell>
+                                    {/* <TableCell align="left" > Proveedor </TableCell> */}
                                     <TableCell align="left" ></TableCell>
                                 </TableRow>
                             </TableHead>
@@ -178,12 +180,12 @@ const Productos = () => {
                                 {
                                     displayData?.length > 0 ? (
                                         displayData?.map(resp => (
-                                            <TableRow key={resp?.idEmployee}>
-                                                <TableCell align="left" > {resp?.idEmployee} </TableCell>
-                                                <TableCell align="left" > {resp?.names} </TableCell>
-                                                <TableCell align="left" > {resp?.lastNames} </TableCell>
-                                                <TableCell align="left" > {resp?.telephone} </TableCell>
-                                                <TableCell align="left" > {resp?.email} </TableCell>
+                                            <TableRow key={resp?.idProducto}>
+                                                <TableCell align="left" > {resp?.idProducto} </TableCell>
+                                                <TableCell align="left" > {resp?.nombreProducto} </TableCell>
+                                                <TableCell align="left" > {resp?.valorProducto} </TableCell>
+                                                <TableCell align="left" > {resp?.describProducto} </TableCell>
+                                                {/* <TableCell align="left" > {resp?.email} </TableCell> */}
                                                 <TableCell align="left" > 
                                                     <IconButton onClick={ () => editarValor(resp) } >
                                                         <EditIcon style={Style.iconoEdit}/>

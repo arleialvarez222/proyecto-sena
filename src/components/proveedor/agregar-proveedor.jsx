@@ -35,15 +35,15 @@ function DialogProveedor({isOpen, onClose, form, modoEdicion })  {
                     <Grid container spacing={2} >
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    name="nombre" 
-                                    value={form?.values?.nombre} 
+                                    name="nombreProveedor" 
+                                    value={form?.values?.nombreProveedor} 
                                     onChange={form?.handleChange} 
                                     margin="dense" 
                                     variant="outlined" 
                                     fullWidth 
                                     label="Ingresar nombre"
-                                    error={form.touched.nombre && Boolean(form.errors.nombre)} 
-                                    helperText={form.touched.nombre && form.errors.nombre} 
+                                    error={form.touched.nombreProveedor && Boolean(form.errors.nombreProveedor)} 
+                                    helperText={form.touched.nombreProveedor && form.errors.nombreProveedor} 
                                 />
                             </Grid>
                            
@@ -75,7 +75,7 @@ function DialogProveedor({isOpen, onClose, form, modoEdicion })  {
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    type="number" 
+                                    type="text" 
                                     name="telefono" 
                                     value={form?.values?.telefono} 
                                     onChange={form?.handleChange} 
