@@ -10,7 +10,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ConfirmarEliminarCliente from './eliminar-cliente';
 import Loading from '../loading/loading';
-import { editarCliente, eliminarCliente, guardarCliente, obtenerClientes } from '../../actions/client-action';
+import { buscarCliente, editarCliente, eliminarCliente, guardarCliente, obtenerClientes } from '../../actions/client-action';
 import { useStateValue } from '../../context/store';
 import Alert from '@material-ui/lab/Alert';
 
@@ -19,7 +19,7 @@ const Clientes = () => {
 
     const [respData, setRespData] = useState([]);
     const [pageNumber, setPageNumber] = useState(0);
-    const [dataPerPage] = useState(10);
+    const [dataPerPage] = useState(5);
     const [modalInsertar, setModalInsertar] = useState(false);
     const [modoEdicion, setModoEdicion] = useState(false);
     const [modalEliminar, setModalEliminar] = useState(false);
@@ -208,7 +208,9 @@ const Clientes = () => {
     }
 
     const barraBusquedaCliente = () => {
-       
+       buscarCliente(busqueda).then(response => {
+           setRespData(response?.data);
+       });
     }
 
     useEffect(() => {

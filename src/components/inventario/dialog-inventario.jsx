@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogTitle, DialogActions, Button, Icon, Grid, TextField } from '@material-ui/core';
+import { Dialog, DialogContent, DialogTitle, DialogActions, Button, Icon, Grid, TextField, MenuItem } from '@material-ui/core';
 import Style from '../../style/style';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function DialogInventario({isOpen, onClose, form, modoEdicion })  {
+function DialogInventario({isOpen, onClose, form, modoEdicion, producto })  {
 
     const classes = useStyles();
 
@@ -35,55 +35,64 @@ function DialogInventario({isOpen, onClose, form, modoEdicion })  {
                     <Grid container spacing={2} >
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    name="nombre" 
-                                    value={form?.values?.nombre} 
+                                    name="idProducto" 
+                                    value={form?.values?.idProducto} 
                                     onChange={form?.handleChange} 
                                     margin="dense" 
+                                    id="select"
                                     variant="outlined" 
                                     fullWidth 
-                                    label="Nombre producto"
-                                    error={form.touched.nombre && Boolean(form.errors.nombre)} 
-                                    helperText={form.touched.nombre && form.errors.nombre} 
-                                />
+                                    select
+                                    label="Nombre producto *"
+                                    error={form.touched.idProducto && Boolean(form.errors.idProducto)} 
+                                    helperText={form.touched.idProducto && form.errors.idProducto} 
+                                >
+                                    {
+                                        producto?.map(resp => ( 
+                                            <MenuItem key={resp?.idProducto} value={resp?.idProducto}> {resp?.nombreProducto} </MenuItem>
+                                        ))
+                                    }
+                                </TextField>
                             </Grid>
                            
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    type="date"
-                                    name="fechaIngreso" 
-                                    value={form?.values?.fechaIngreso} 
-                                    onChange={form?.handleChange} 
-                                    margin="dense" 
-                                    variant="outlined" 
-                                    fullWidth 
-                                    error={form.touched.fechaIngreso && Boolean(form.errors.fechaIngreso)} 
-                                    helperText={form.touched.fechaIngreso && form.errors.fechaIngreso} 
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <TextField 
-                                    type="number" 
-                                    name="cantidad" 
-                                    value={form?.values?.cantidad} 
-                                    onChange={form?.handleChange} 
-                                    margin="dense" variant="outlined" 
-                                    fullWidth 
-                                    label="Ingresar e-mail" 
-                                    error={form.touched.cantidad && Boolean(form.errors.cantidad)} 
-                                    helperText={form.touched.cantidad && form.errors.cantidad}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <TextField 
-                                    type="number" 
+                                    type="number"
                                     name="precio" 
                                     value={form?.values?.precio} 
                                     onChange={form?.handleChange} 
+                                    margin="dense" 
+                                    variant="outlined" 
+                                    label="Precio *"
+                                    fullWidth 
+                                    error={form.touched.precio && Boolean(form.errors.precio)} 
+                                    helperText={form.touched.precio && form.errors.precio} 
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField 
+                                    type="number" 
+                                    name="cantDisponibleProducto" 
+                                    value={form?.values?.cantDisponibleProducto} 
+                                    onChange={form?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    label="Ingresar teléfono" 
-                                    error={form.touched.precio && Boolean(form.errors.precio)} 
-                                    helperText={form.touched.precio && form.errors.precio}
+                                    label="Cantidad máxima *" 
+                                    error={form.touched.cantDisponibleProducto && Boolean(form.errors.cantDisponibleProducto)} 
+                                    helperText={form.touched.cantDisponibleProducto && form.errors.cantDisponibleProducto}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField 
+                                    type="number" 
+                                    name="cantMinimaProducto" 
+                                    value={form?.values?.cantMinimaProducto} 
+                                    onChange={form?.handleChange} 
+                                    margin="dense" variant="outlined" 
+                                    fullWidth 
+                                    label="Cantidad Mínima *" 
+                                    error={form.touched.cantMinimaProducto && Boolean(form.errors.cantMinimaProducto)} 
+                                    helperText={form.touched.cantMinimaProducto && form.errors.cantMinimaProducto}
                                 />
                             </Grid>
                         

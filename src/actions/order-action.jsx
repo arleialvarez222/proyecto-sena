@@ -1,36 +1,35 @@
 import HttpService from '../servicios/http-service';
 
-
-export const obtenerProductos = () => {
+export const obtenerPedido = () => {
     return new Promise((resolve, reject) => {
-        HttpService.get('/Products').then(response => {
+        HttpService.get(`/Order`).then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);
         });
     })
 }
-export const guardarProducto = (formulario) => {
+export const guardarPedido = (formulario) => {
     return new Promise((resolve, reject) => {
-        HttpService.post('/Products', formulario).then(response => {
+        HttpService.post(`/Order`, formulario).then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);
         });
     })
 }
-export const editarProducto = (formulario) => {
+export const editarPedido = (formulario) => {
     return new Promise((resolve, reject) => {
-        HttpService.put(`/Products/${formulario?.idProducto}`, formulario).then(response => {
+        HttpService.put(`/Order/${formulario?.idPedido}`, formulario).then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);
         });
     })
 }
-export const eliminarProducto = (formulario) => {
+export const eliminarPedido = (formulario) => {
     return new Promise((resolve, reject) => {
-        HttpService.delete(`/Products/${formulario?.idProducto}`).then(response => {
+        HttpService.delete(`/Order/${formulario?.idPedido}`).then(response => {
             resolve(response);
         }).catch(error => {
             reject(error);

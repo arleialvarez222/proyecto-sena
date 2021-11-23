@@ -10,11 +10,15 @@ import * as Yup from 'yup';
 import Loading from '../loading/loading';
 import DialogInventario from './dialog-inventario';
 import ConfirmarEliminarInventario from './eliminar-inventario';
-import { obtenerInventarios } from '../../actions/inventory-action';
+import { editarInventarios, eliminarInventarios, guardarInventarios, obtenerInventarios } from '../../actions/inventory-action';
+import { obtenerProductos } from '../../actions/product-action';
+import { useStateValue } from '../../context/store';
+import Alert from '@material-ui/lab/Alert';
 
 const Inventario = () => {
 
     const [respData, setRespData] = useState([]);
+    const [producto, setProducto] = useState([]);
     const [pageNumber, setPageNumber] = useState(0);
     const [dataPerPage] = useState(10);
     const [modalInsertar, setModalInsertar] = useState(false);
@@ -23,29 +27,28 @@ const Inventario = () => {
     const [loading, setLoading] = useState(false);
     const [selectInventory, setSelectInventory] = useState();
     const [busqueda, setBusqueda] = useState('');
+    const [ {openSnackbar}, dispatch] = useStateValue();
 
     const validationSchema = Yup.object({
-        nombre: Yup.string()
-        .min(3, 'Minimo 3 carácteres')
-        .max(25, 'Maximo 25 carácteres')
+        cantDisponibleProducto: Yup.string()
         .required('Este campo es obligatorio'),
-        fechaIngreso: Yup.string() 
+        cantMinimaProducto: Yup.string() 
         .required('Este campo es obligatorio'),
-        cantidad: Yup.string() 
+        idProducto: Yup.string() 
         .required('Este campo es obligatorio'),
         precio: Yup.string() 
         .required('Este campo es obligatorio'),
     });
-
+    //console.log(respData)
     const form = useFormik({
         initialValues: {
-            nombre: '',
-            fechaIngreso     : '',
-            cantidad : '',
+            cantDisponibleProducto: '',
+            cantMinimaProducto : '',
+            idProducto : '',
             precio : '',
         },
         onSubmit: (values) => {
-            insertarinventario(values);
+            modoEdicion ? updateInventory(values) : insertarinventario(values);
             limpiarCampos();
         },
         validationSchema: validationSchema,
@@ -63,14 +66,100 @@ const Inventario = () => {
         });
     }
 
+    useEffect(() => {
+        const getProduct = () => {
+            obtenerProductos().then(response => {
+                setProducto(response?.data);
+            })
+        }
+        getProduct();
+    }, [])
+
     const insertarinventario = () => {
-        console.log(form.values);
+        //console.log(form?.values)
+        guardarInventarios(form?.values).then(response => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="success">Los datos se almacenaron correctamente</Alert>,
+                },
+            });
+            getInventorys();
+            limpiarCampos();
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                  open: true,
+                  mensaje: <Alert severity="error">Se encontraron fallos al tratar de guardar los datos!</Alert>,
+                },
+            });
+        })
     }
 
     const editarId = (resp) => {
         setModoEdicion(true);
         form?.setValues({...resp});
         abrirModalInsertar();
+    }
+
+    const updateInventory = () => {
+        editarInventarios(form?.values).then(response => {
+            const respuesta = response?.data;
+            const dataAuxiliar = respData;
+            dataAuxiliar?.map(resp => {
+                if(resp?.idInventario === form?.idInventario){
+                    resp.cantDisponibleProducto = respuesta?.cantDisponibleProducto;
+                    resp.cantMinimaProducto = respuesta?.cantMinimaProducto;
+                    resp.idProducto = respuesta?.idProducto;
+                    resp.precio = respuesta?.precio;
+                }
+                dispatch({
+                    type: "OPEN_SNACKBAR",
+                    openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="success" >Los datos se actualizaron exitosamente</Alert>,
+                    },
+                });
+                getInventorys();
+                limpiarCampos();
+                cerrarModalInsertar();
+                return respuesta;
+            })
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="success" >Se encontraron fallas al editar los datos</Alert>,
+                },
+            });
+        })
+    }
+
+    const deleteInventory = (idInventario) => {
+        eliminarInventarios(idInventario).then(response => {
+            const arrayFiltrado = respData?.map(x => x?.idInventario !== idInventario);
+            setRespData(arrayFiltrado);
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="warning">Los datos se eliminaron</Alert>,
+                },
+            });
+            getInventorys();
+            cerrarModEliminar();
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="warning">Los datos no se eliminaron correctamente</Alert>,
+                },
+            });
+        })
     }
 
     const limpiarCampos = () => {
@@ -137,11 +226,14 @@ const Inventario = () => {
                         onClose={cerrarModalInsertar}
                         form={form}
                         modoEdicion={modoEdicion}
+                        producto={producto}
                     />
 
                     <ConfirmarEliminarInventario
                         abrir={modalEliminar}
                         cerrarModal={cerrarModEliminar}
+                        selectInventory={selectInventory}
+                        deleteInventory={deleteInventory}
                     />
                 </Grid>
 
@@ -176,10 +268,10 @@ const Inventario = () => {
                                         displayData?.map(resp => (
                                             <TableRow key={resp?.idInventario}>
                                                 <TableCell align="left" > {resp?.idInventario} </TableCell>
-                                                <TableCell align="left" > {resp?.idProducto} </TableCell>
+                                                <TableCell align="left" > {resp?.producto?.nombreProducto} </TableCell>
                                                 <TableCell align="left" > {resp?.cantMinimaProducto} </TableCell>
                                                 <TableCell align="left" > {resp?.cantDisponibleProducto} </TableCell>
-                                                <TableCell align="left" > {resp?.address} </TableCell>
+                                                <TableCell align="left" > {resp?.precio} </TableCell>
                                                 <TableCell align="left" > 
                                                     <IconButton onClick={ () => editarId(resp) } >
                                                         <EditIcon style={Style.iconoEdit}/>

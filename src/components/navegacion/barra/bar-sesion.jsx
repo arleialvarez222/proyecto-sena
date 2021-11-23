@@ -3,6 +3,9 @@ import { IconButton, makeStyles, Toolbar, Grid, Drawer } from '@material-ui/core
 import Style from '../../../style/style';
 import logo3  from '../../../imagenes/logo3.jpeg';
 import MenuIzquierda from './menu-izquierda';
+import { useStateValue } from '../../../context/store';
+import MenuDerecha from './menu-derecha';
+import { withRouter } from 'react-router-dom';
 
 const useStyle = makeStyles ((theme) => ({
     seccionDesktop: {
@@ -16,7 +19,7 @@ const useStyle = makeStyles ((theme) => ({
     },
     list: {
       width: 200,
-      height: 694,
+      height: 625,
       backgroundColor: "#0039cb",
       color: "#ffffff"
     },
@@ -24,14 +27,16 @@ const useStyle = makeStyles ((theme) => ({
       fontSize: "14px",
       fontWeight: 600,
       paddingLeft: "15px",
-      color: "#212121",
+      color: "#292424",
     },
   }));
 
-const BarSesion = () => {
+const BarSesion = (props) => {
   
   const classe = useStyle();
   const [menuIzquierda, setMenuIzquierda] = useState(false); 
+  const [menuDerecha, setMenuDerecha] = useState(false); 
+  const [{ sesionUsuario }, dispatch] = useStateValue();
 
   const abrirMenuAction = () => {
     setMenuIzquierda(true);
@@ -39,7 +44,26 @@ const BarSesion = () => {
 
   const cerrarMenu = () => {
     setMenuIzquierda(false);
-  } 
+  }
+  
+  const abrirMenuD = () => {
+    setMenuDerecha(true);
+  }
+
+  const cerrarMenuDerecha = () => {
+    setMenuDerecha(false);
+} 
+
+  const salirSesion = () => {
+    dispatch({
+      type : "SALIR_SESION",
+      nuevoUsuario:  null,
+      autenticado : false
+    }) 
+    localStorage.removeItem('state');
+    localStorage.removeItem('token');
+    props.history.push("/login"); 
+  }
 
   return (
       <>
@@ -48,6 +72,14 @@ const BarSesion = () => {
                 <MenuIzquierda classe={classe} />
             </div>
         </Drawer>
+        <Drawer open = {menuDerecha} onClose = {cerrarMenuDerecha} anchor="right" >
+              <div className={classe.list} onKeyDown={cerrarMenuDerecha} onClick={cerrarMenuDerecha}>
+                  <MenuDerecha 
+                    classe={classe}
+                    salirSesion={salirSesion}
+                  />
+              </div>
+          </Drawer>
         <Toolbar>
             <IconButton color="inherit" onClick={abrirMenuAction} style={Style.iconMenu} >
                 <i className="material-icons" >menu</i>
@@ -66,7 +98,7 @@ const BarSesion = () => {
               <div className={classe.grow} ></div>
               
               <div>
-              <IconButton color="inherit"  >
+              <IconButton color="inherit" onClick={abrirMenuD} >
                     <i className="material-icons" >exit_to_app</i>
                 </IconButton>
               </div>
@@ -76,4 +108,4 @@ const BarSesion = () => {
   )
 }
 
-export default BarSesion;
+export default withRouter(BarSesion);

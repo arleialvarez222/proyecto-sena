@@ -109,17 +109,18 @@ const Proveedor = () => {
                     resp.direccion = respuesta?.direccion;
                     resp.email = respuesta?.email;
                 }
+                dispatch({
+                    type: "OPEN_SNACKBAR",
+                    openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="success" >Actualización exitosa</Alert>,
+                    },
+                });
+                getProveedor();
+                cerrarModalInsertar();
+                limpiarCampos();
+                return respuesta;
             })
-            dispatch({
-                type: "OPEN_SNACKBAR",
-                openMensaje: {
-                open: true,
-                mensaje:  <Alert severity="success" >Actualización exitosa</Alert>,
-                },
-            });
-            getProveedor();
-            cerrarModalInsertar();
-            limpiarCampos();
         }).catch(error => {
             dispatch({
                 type: "OPEN_SNACKBAR",

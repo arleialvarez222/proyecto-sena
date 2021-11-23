@@ -7,14 +7,14 @@ const MenuIzquierda = ({classe}) => {
     return (
         <div className={classe.list} >
         <List>
-            <ListItem component={Link} button to="/nuevaVenta" >
+            {/* <ListItem component={Link} button to="/nuevaVenta" >
                 <i className = "material-icons" style={Style.iconDrawer} >add_circle</i>
                 <ListItemText classe={{primary: classe.listItemText}} primary="Agregar Venta" />
             </ListItem>
             <ListItem component={Link} button to="/ventas" >
                 <i className = "material-icons" style={Style.iconDrawer} >today</i>
                 <ListItemText classe={{primary: classe.listItemText}} primary="Ventas" />
-            </ListItem>
+            </ListItem> */}
             <ListItem component={Link} button to="/clientes" >
                 <i className = "material-icons" style={Style.iconDrawer} >people_alt</i>
                 <ListItemText classe={{primary: classe.listItemText}} primary="Clientes" />

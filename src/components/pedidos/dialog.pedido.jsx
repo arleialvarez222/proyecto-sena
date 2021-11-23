@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function DialogPedido({ isOpen, onClose, formulario, modoEdicion }) {
+function DialogPedido({ isOpen, onClose, formulario, modoEdicion, cliente, empleado }) {
     const classes = useStyles();
 
     return (
@@ -35,124 +35,91 @@ function DialogPedido({ isOpen, onClose, formulario, modoEdicion }) {
                         <Grid container spacing={2} >
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    name="cliente" 
-                                    value={formulario?.values?.cliente} 
+                                    name="idCliente" 
+                                    value={formulario?.values?.idCliente} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" 
                                     id="select"
                                     variant="outlined" 
                                     fullWidth 
                                     select
-                                    label="Ingresar cliente"
-                                    error={formulario.touched.cliente && Boolean(formulario.errors.cliente)} 
-                                    helperText={formulario.touched.cliente && formulario.errors.cliente} 
+                                    label="Ingresar cliente *"
+                                    error={formulario.touched.idCliente && Boolean(formulario.errors.idCliente)} 
+                                    helperText={formulario.touched.idCliente && formulario.errors.idCliente} 
                                 >
-                                    <MenuItem value="nombre_cliente1">Jose Avila</MenuItem>
-                                    <MenuItem value="nombre_cliente2">Laura Villegas</MenuItem>
-                                    <MenuItem value="nombre_cliente3">Arlei Roa</MenuItem>
+                                    {
+                                        cliente?.map(resp => (
+                                            <MenuItem key={resp?.idCliente} value={resp?.idCliente}>{resp?.nombres} {resp?.apellidos}</MenuItem>
+                                        ))
+                                    }
                                 </TextField>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField 
                                     type="date"
-                                    name="fechaVenta" 
-                                    value={formulario?.values?.fechaVenta} 
-                                    onChange={formulario?.handleChange} 
-                                    margin="dense" 
-                                    variant="outlined" 
-                                    fullWidth 
-                                    error={formulario.touched.fechaVenta && Boolean(formulario.errors.fechaVenta)} 
-                                    helperText={formulario.touched.fechaVenta && formulario.errors.fechaVenta} 
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <TextField 
-                                    type="date"
-                                    name="fechaEntrega" 
-                                    value={formulario?.values?.fechaEntrega} 
+                                    name="fechaVentaPedido" 
+                                    format="dd/mm/yyyy"
+                                    value={formulario?.values?.fechaVentaPedido} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    error={formulario.touched.fechaEntrega && Boolean(formulario.errors.fechaEntrega)} 
-                                    helperText={formulario.touched.fechaEntrega && formulario.errors.fechaEntrega} 
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <TextField 
-                                    name="direccion" 
-                                    value={formulario?.values?.direccion} 
-                                    onChange={formulario?.handleChange} 
-                                    margin="dense" 
-                                    variant="outlined" 
-                                    fullWidth 
-                                    label="Ingresar direccion" 
-                                    error={formulario.touched.direccion && Boolean(formulario.errors.direccion)} 
-                                    helperText={formulario.touched.direccion && formulario.errors.direccion} 
-                                />
-                            </Grid>
-                            
-                            <Grid item xs={12} md={6}>
-                                <TextField 
-                                    type="number" 
-                                    name="telefono" 
-                                    value={formulario?.values?.telefono} 
-                                    onChange={formulario?.handleChange} 
-                                    margin="dense" variant="outlined" 
-                                    fullWidth 
-                                    label="Ingresar teléfono" 
-                                    error={formulario.touched.telefono && Boolean(formulario.errors.telefono)} 
-                                    helperText={formulario.touched.telefono && formulario.errors.telefono}
+                                    InputLabelProps={{shrink: true}}
+                                    label="Fecha venta *"
+                                    error={formulario.touched.fechaVentaPedido && Boolean(formulario.errors.fechaVentaPedido)} 
+                                    helperText={formulario.touched.fechaVentaPedido && formulario.errors.fechaVentaPedido} 
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField 
                                     type="number" 
-                                    name="valor" 
-                                    value={formulario?.values?.valor} 
+                                    name="montoFinalPedido" 
+                                    value={formulario?.values?.montoFinalPedido} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" variant="outlined" 
                                     fullWidth 
-                                    label="Valor pedido" 
-                                    error={formulario.touched.valor && Boolean(formulario.errors.valor)} 
-                                    helperText={formulario.touched.valor && formulario.errors.valor}
+                                    label="Valor pedido *" 
+                                    error={formulario.touched.montoFinalPedido && Boolean(formulario.errors.montoFinalPedido)} 
+                                    helperText={formulario.touched.montoFinalPedido && formulario.errors.montoFinalPedido}
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    name="estado" 
-                                    value={formulario?.values?.estado} 
+                                    name="estadoPedido" 
+                                    value={formulario?.values?.estadoPedido} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" 
                                     id="select"
                                     variant="outlined" 
                                     fullWidth 
                                     select
-                                    label="Seleccionar estado"
-                                    error={formulario.touched.estado && Boolean(formulario.errors.estado)} 
-                                    helperText={formulario.touched.estado && formulario.errors.estado} 
+                                    label="Seleccionar estado *"
+                                    error={formulario.touched.estadoPedido && Boolean(formulario.errors.estadoPedido)} 
+                                    helperText={formulario.touched.estadoPedido && formulario.errors.estadoPedido} 
                                 >
                                     <MenuItem value="entregado">Entregado</MenuItem>
                                     <MenuItem value="pendiente">Pendiente</MenuItem>
-                                    <MenuItem value="en_proceso">En preceso</MenuItem>
+                                    <MenuItem value="en proceso">En preceso</MenuItem>
                                 </TextField>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField 
-                                    name="empleado" 
-                                    value={formulario?.values?.empleado} 
+                                    name="idEmpleado" 
+                                    value={formulario?.values?.idEmpleado} 
                                     onChange={formulario?.handleChange} 
                                     margin="dense" 
                                     id="select"
                                     variant="outlined" 
                                     fullWidth 
                                     select
-                                    label="Ingresar empleado"
-                                    error={formulario.touched.empleado && Boolean(formulario.errors.empleado)} 
-                                    helperText={formulario.touched.empleado && formulario.errors.empleado} 
+                                    label="Ingresar empleado *"
+                                    error={formulario.touched.idEmpleado && Boolean(formulario.errors.idEmpleado)} 
+                                    helperText={formulario.touched.idEmpleado && formulario.errors.idEmpleado} 
                                 >
-                                    <MenuItem value="nombre_empleado1">Jose Avila</MenuItem>
-                                    <MenuItem value="nombre_empleado2">Laura Villegas</MenuItem>
-                                    <MenuItem value="nombre_empleado3">Arlei Roa</MenuItem>
+                                    {
+                                        empleado?.map(resp => (
+                                            <MenuItem key={resp?.idEmpleado} value={resp?.idEmpleado}>{resp?.nombres} {resp?.apellidos}</MenuItem>
+                                        ))
+                                    }
                                 </TextField>
                             </Grid>
                         </Grid>

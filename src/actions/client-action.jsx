@@ -39,3 +39,13 @@ export const eliminarCliente = (formulario) => {
     })
 }
 
+export const buscarCliente = (busqueda) => {
+    return new Promise((resolve, reject) => {
+        HttpService.get(`/Clients?Documento=${busqueda}`).then(response => {
+            resolve(response);
+        }).catch(error => {
+            reject(error);
+        })
+    })
+}
+

@@ -4,8 +4,19 @@ import Style  from '../../../style/style';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { Link } from 'react-router-dom';
+import { useStateValue } from '../../../context/store';
+import { loginUsuario } from '../../../actions/user-action';
+import Alert from '@material-ui/lab/Alert';
+import { withRouter } from 'react-router-dom';
 
-const Login = () => {
+const Login = (props) => {
+
+    const [ {sesionUsuario}, dispatch] = useStateValue();
+
+    const state = sesionUsuario || JSON.parse(localStorage.getItem("state"));
+    if(state?.autenticado === true){
+        props.history.push('/');
+    }
 
     const validationSchema = Yup.object().shape({
         email: Yup.string() 
@@ -22,14 +33,27 @@ const Login = () => {
             password        : '',
         },
         onSubmit: (values) => {
-            console.log(values);
+            loginUsuarioBoton(values);
         },
         validationSchema: validationSchema
     });
 
+    const loginUsuarioBoton = () => {
+        loginUsuario(usuario?.values, dispatch, ).then(response => {
+            props.history.push("/");
+        }).catch(error => {
+            dispatch({
+                type : "OPEN_SNACKBAR",
+                openMensaje : {
+                    open : true,
+                    mensaje : <Alert severity="warning">Las credenciales del usuario no son correctas</Alert>,
+                }
+            });
+        });
+    }
+
     return (
-        <div>
-            <Container component="main" maxWidth="xs" justify="center" style={Style.login} className="login" > 
+            <Container component="main" maxWidth="xs" className="login" > 
                 <div>
                     <Grid container justify="center" alignItems="center" >
                         <Typography component="h1" variant="h5" className="titulos" color="primary">
@@ -92,8 +116,7 @@ const Login = () => {
                     </form>
                 </div>
             </Container> 
-        </div>
     )
 }
 
-export default Login;
+export default withRouter(Login);

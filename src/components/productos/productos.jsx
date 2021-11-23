@@ -10,12 +10,16 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ReactPaginate from 'react-paginate';
 import Loading from '../loading/loading';
-import { obtenerProductos } from '../../actions/product-action';
+import { editarProducto, eliminarProducto, guardarProducto, obtenerProductos } from '../../actions/product-action';
+import { obtenerProveedores } from '../../actions/proveedor-action';
+import { useStateValue } from '../../context/store';
+import Alert from '@material-ui/lab/Alert';
 
 
 const Productos = () => {
 
     const [respData, setRespData] = useState([]);
+    const [proveedor, setProveedor] = useState([]);
     const [modalInsertar, setModalInsertar] = useState(false);
     const [modoEdicion, setModoEdicion] = useState(false);
     const [modalEliminar, setModalEliminar] = useState(false);
@@ -24,33 +28,30 @@ const Productos = () => {
     const [dataPerPage] = useState(10);
     const [loading, setloading] = useState(false);
     const [busqueda, setBusqueda] = useState('');
+    const [ {openSnackbar}, dispatch] = useStateValue();
 
     const validationSchema = Yup.object({
-        nombre: Yup.string()
+        nombreProducto: Yup.string()
+        .required('Este campo es obligatorio')
+        .min(3, 'Minimo 3 carácteres')
+        .max(30, 'Maximo 30 carácteres'),
+        describProducto: Yup.string()
+        .required('Este campo es obligatorio')
+        .min(3, 'Minimo 3 carácteres')
+        .max(100, 'Maximo 100 carácteres'),
+        /* proveedor: Yup.string() 
         .min(3, 'Minimo 3 carácteres')
         .max(25, 'Maximo 25 carácteres')
-        .required('Este campo es obligatorio'),
-        descripcion: Yup.string()
-        .min(3, 'Minimo 3 carácteres')
-        .max(25, 'Maximo 25 carácteres')
-        .required('Este campo es obligatorio'),
-        proveedor: Yup.string() 
-        .min(3, 'Minimo 3 carácteres')
-        .max(25, 'Maximo 25 carácteres')
-        .required('Este campo es obligatorio'),
-        valor: Yup.string() 
-        .required('Este campo es obligatorio'),
+        .required('Este campo es obligatorio'), */
     });
 
     const formulario = useFormik({
         initialValues: {
-            nombre: '',
-            valor     : '',
-            descripcion : '',
-            proveedor : '',
+            nombreProducto: '',
+            describProducto : '',
         },
         onSubmit: (values) => {
-            registrarEmpleado(values);
+            modoEdicion ? updateProduct(values) : saveProduct(values);
             limpiarCampos();
         },
         validationSchema: validationSchema,
@@ -68,8 +69,92 @@ const Productos = () => {
         });
     } 
 
-    const registrarEmpleado = () => {
-       setRespData(formulario.values);
+    useEffect(() => {
+       const getSupplier = () => {
+        obtenerProveedores().then(response => {
+            setProveedor(response?.data);
+        }) 
+       }
+       getSupplier();
+    }, [])
+
+    const saveProduct = () => {
+        guardarProducto(formulario?.values).then(response => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="success">Los datos se almacenaron correctamente</Alert>,
+                },
+            });
+            getProducts();
+            limpiarCampos();
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="error">Se encontraron fallos al tratar de guardar los datos!</Alert>,
+                },
+            });
+        })
+    }
+
+    const updateProduct = () => {
+        editarProducto(formulario?.values).then(response => {
+            const respuesta = response?.data;
+            const newData = respData;
+            newData?.map(resp => {
+                if(resp?.idProducto === formulario?.idProducto){
+                    resp.nombreProducto = respuesta?.nombreProducto;
+                    resp.describProducto = respuesta?.describProducto;
+                    resp.proveedor = respuesta?.proveedor;
+                }
+                dispatch({
+                    type: "OPEN_SNACKBAR",
+                    openMensaje: {
+                    open: true,
+                    mensaje:  <Alert severity="success" >Actualización de datos exitosa</Alert>,
+                    },
+                });
+                getProducts();
+                limpiarCampos();
+                cerrarModInsertar();
+                return respuesta;
+            })
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="error">No se actualizaron los datos!!!</Alert>,
+                },
+            });
+        })
+    }
+
+    const deleteProduct = (idProducto) => {
+        eliminarProducto(idProducto).then(response => {
+            const arrayNew = respData?.filter(x => x?.idProducto !== idProducto);
+            setRespData(arrayNew);
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="warning">Los datos del producto se eliminaron</Alert>,
+                },
+            });
+            getProducts();
+            cerrarModalEliminar();
+        }).catch(error => {
+            dispatch({
+                type: "OPEN_SNACKBAR",
+                openMensaje: {
+                open: true,
+                mensaje:  <Alert severity="error" >Error!!!, los datos no fueron eliminados</Alert>,
+                },
+            });
+        })
     }
     
     const limpiarCampos = () => {
@@ -142,12 +227,14 @@ const Productos = () => {
                         onClose={cerrarModInsertar}
                         modoEdicion={modoEdicion}
                         formulario={formulario}
+                        proveedor={proveedor}
                     />
 
                     <EliminarProducto
                         abrir={modalEliminar}
                         cerrar={cerrarModalEliminar}
                         producto={selectProducto}
+                        deleteProduct={deleteProduct}
                     />
                 </Grid>
 
@@ -170,7 +257,6 @@ const Productos = () => {
                                 <TableRow>
                                     <TableCell align="left" > Id </TableCell>
                                     <TableCell align="left" > Nombre producto </TableCell>
-                                    <TableCell align="left" > Valor producto </TableCell>
                                     <TableCell align="left" > Descripción </TableCell>
                                     {/* <TableCell align="left" > Proveedor </TableCell> */}
                                     <TableCell align="left" ></TableCell>
@@ -183,7 +269,6 @@ const Productos = () => {
                                             <TableRow key={resp?.idProducto}>
                                                 <TableCell align="left" > {resp?.idProducto} </TableCell>
                                                 <TableCell align="left" > {resp?.nombreProducto} </TableCell>
-                                                <TableCell align="left" > {resp?.valorProducto} </TableCell>
                                                 <TableCell align="left" > {resp?.describProducto} </TableCell>
                                                 {/* <TableCell align="left" > {resp?.email} </TableCell> */}
                                                 <TableCell align="left" > 

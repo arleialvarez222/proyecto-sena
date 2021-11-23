@@ -1,7 +1,7 @@
 import React from 'react';
 import './app.css';
 import theme from './theme/theme';
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 import { Grid, Snackbar } from '@material-ui/core';
 import AppNavbar from './components/navegacion/app-navbar';
@@ -17,6 +17,7 @@ import Pedidos from './components/pedidos/pedidos';
 import Ventas from './components/ventas/ventas';
 import DialogVenta from './components/ventas/agregar-venta';
 import { useStateValue } from './context/store';
+import RutaSegura from './components/navegacion/ruta-segura';
 
 function App() {
   const [{ openSnackbar }, dispatch] = useStateValue();
@@ -45,17 +46,18 @@ function App() {
           <AppNavbar/>
           <Grid container >
             <Switch>
-              <Route exact path="/productos" component={Productos} />
-              <Route exact path="/" component={Productos} />
-              <Route exact path="/empleados" component={Empleados} />
-              <Route exact path="/clientes" component={Clientes} />
-              <Route exact path="/proveedor" component={Proveedor} />
-              <Route exact path="/inventario" component={Inventario} />
-              <Route exact path="/pedidos" component={Pedidos} />
-              <Route exact path="/ventas" component={Ventas} />
-              <Route exact path="/nuevaVenta" component={DialogVenta} />
+              <RutaSegura exact path="/productos" component={Productos} />
+              <RutaSegura exact path="/" component={Pedidos} />
+              <RutaSegura exact path="/pedidos" component={Pedidos} />
+              <RutaSegura exact path="/empleados" component={Empleados} />
+              <RutaSegura exact path="/clientes" component={Clientes} />
+              <RutaSegura exact path="/proveedor" component={Proveedor} />
+              <RutaSegura exact path="/inventario" component={Inventario} />
+              <RutaSegura exact path="/ventas" component={Ventas} />
+              <RutaSegura exact path="/nuevaVenta" component={DialogVenta} />
               <Route exact path="/registro" component={Registro} />
               <Route exact path="/login" component={Login} />
+              <Route path="*" > <Redirect to="/productos"/> </Route>
             </Switch>
           </Grid>
           <Footer/>
